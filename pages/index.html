@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<!--  
+ * Copyright 2017 Waryam Soomro
+ * Licensed under MIT 
+-->
+
+<html>
+
+<head>
+    <title>goTrack - Gene Ontology Browser</title>
+    <script>
+        const render = require("../js/index_render")
+    </script>
+    <script type="text/javascript" src="../js/libs/jq.js"></script>
+</head>
+
+<body class="container-flux" data-ng-app="gTrack" data-ng-controller="gTrackCtrl">
+
+
+    <div id="fullpagem" class="fullpage well well-lg" style="
+                                        padding:0;
+                                        margin-bottom:0;
+                                        border-radius:0;
+                                        display:none;">
+        <div id="mainsection" data-ng-hide="termPage">
+            <ul class="nav nav-pills nav-justified topnav">
+                <li class="active"><a data-toggle="pill" href="#searchtab" ng-click="indexTab=false">Search</a></li>
+                <li><a data-toggle="pill" href="#goindex" ng-click="indexTab=true">Index</a></li>
+            </ul>
+
+            <div class="index-contents">
+
+                <div class="tab-pane fade in active" id="searchtab" ng-hide="indexTab">
+                    <div class="allcenter">
+                        <h4>See Index or Search By GO-ID:</h4>
+                        <div class="well well-lg">
+
+                            <div class="input-group">
+                                <input data-ng-keypress="goToTerm($event)" data-ng-model="searchTerm" id="acid" type="text" class="form-control" placeholder="Search for...">
+                                <span class="input-group-btn">
+                            <button data-ng-click="goToTerm($event)" class="btn btn-default" type="button">
+                              <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="goindex" class="tab-pane fade centertext" ng-show="indexTab">
+
+                    <div class="btn-group" >
+                        <label class="btn btn-primary">
+                                          <input type="radio" ng-model="indexRadio" value="id"> GO-ID
+                                        </label>
+                        <label class="btn btn-primary">
+                                          <input type="radio" ng-model="indexRadio" value="name"> NAME
+                                        </label>
+
+
+
+                    </div>
+
+
+                    <ul class="list-group">
+                        <li class="list-group-item" ng-repeat="x in indexData">
+                            <a href="#" ng-click="goTermPage(x)">
+                            {{x[indexRadio] | limitTo : 37}}
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="pagerb bg-primary">
+                        <p>Page {{index}} of {{pageCount}}</p>
+                        <div class="input-group" style="margin-left:90px">
+                            <input style="width:50%" ng-model="goToValue" type="text" class="form-control" placeholder="Go To Page...">
+                            <span style="float:left" class="input-group-btn">
+                                        <button ng-click="indexJump(goToValue)" class="btn btn-default" type="button">Go!</button>
+                                    </span>
+                        </div>
+                        <ul class="pager">
+                            <li ng-click="index=index-1;indexFunc()"><a href="#" ng-show="index>1">Previous</a></li>
+                            <li ng-click="index=index+1;indexFunc()"><a href="#" ng-show="index<pageCount">Next</a></li>
+                        </ul>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <div id="termpage" data-ng-show="termPage">
+            <ul class="nav nav-tabs nav-justified topnav">
+
+                <li>
+                    <div id="pagenavbutton">
+                        <a href="#" data-ng-click="goHome()">
+                            <span class="glyphicon glyphicon-chevron-left"></span> Back</a>
+                    </div>
+                </li>
+
+                <li style="border-left:1px solid antiquewhite;" role="presentation" class="active"><a ng-click="isChart=false" data-toggle="tab" href="#terminfo">Information</a></li>
+
+                <li role="presentation"><a data-toggle="tab" ng-click="isChart=true" href="#termchart">Ancestor Chart</a></li>
+            </ul>
+
+            <div class="container">
+
+                <h1 class="page-header" id="termid">
+                    {{data.id}} <small>({{data.namespace}})</small>
+                </h1>
+
+
+
+                <div class="well well-lg tab-pane fade in active" id="terminfo" ng-hide="isChart">
+                        <div id="termname">
+                            <h3 class="page-header" style="margin-top:0">
+                                Name:
+                            </h3>
+                            <!-- Term Name -->
+                            <p>{{data.name}}</p>
+                        </div>
+
+                        <div id="termdef">
+                            <h3 class="page-header">
+                                Defintition:
+                            </h3>
+                            <p>{{data.def}}</p>
+                            <!-- Term Defintition -->
+                        </div>
+
+                        <div id="termsyn" ng-show="data.synonym">
+                            <h3 class="page-header">
+                                Synonym(s):
+                            </h3>
+                            <table class="table table-bordered table-condensed table-striped table-hover">
+                                <tbody>
+                                    <tr ng-repeat="x in data.synonym">
+                                        <td>{{x}}</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                            <!-- Term Synonym -->
+                        </div>
+
+                        <div id="termsimilar" ng-show="data.alt_id">
+                            <h3 class="page-header">
+                                Alternative Ids:
+                            </h3>
+
+                            <table class="table table-bordered table-condensed table-striped table-hover">
+                                <tbody>
+                                    <tr ng-repeat="x in data.alt_id">
+                                        <td>{{x}}</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                            <!-- Term Alternatives -->
+                        </div>
+
+                        <div id="termrelations" ng-show="data.relationship">
+                            <h3 class="page-header">
+                                Parents:
+                            </h3>
+                            <table class="table table-bordered table-condensed table-striped table-hover">
+
+                                <thead>
+                                    <th>Type</th>
+                                    <th>Terms</th>
+                                </thead>
+                          
+                                <tbody>
+
+                                     <!-- (type,term) in data.relationship -->
+                                    
+                                        <tr ng-repeat="(type,term) in data.relationship">
+                                            <td>{{type}}</td>
+                                            <td>{{term | endL}}</td> 
+                                        </tr>
+                                    
+                                
+                                </tbody>
+
+                            </table>
+                            <!-- Term Relationships -->
+                        </div>
+
+                    
+
+                </div>
+
+                <div class="well well-lg" style="text-align:center" ng-show="!isGraphComplete">Graph In Progress,Please Wait</div>
+
+                <div id="termchart" class="tab-pane fade" style="height:390px" ng-show="isChart && isGraphComplete">
+
+                        
+                   
+                </div>
+            
+
+            </div>
+
+            <!-- <ul class="nav nav-tabs">
+                <li>Information</li>
+                <li>Relationship</li>
+                <li>Ancestor Chart</li>
+            </ul>
+        -->
+        </div>
+
+    </div>
+
+    <script type="text/javascript" src="../js/libs/all.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/all.css">
+
+
+</body>
+
+</html>

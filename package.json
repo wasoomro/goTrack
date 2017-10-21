@@ -1,0 +1,25 @@
+{
+  "name": "gotrack",
+  "version": "1.0.0",
+  "description": "GoTrack Lets you browse Gene Ontology Offline",
+  "main": "main.js",
+  "dependencies": {
+    "nedb": "^1.8.0"
+  },
+  "devDependencies": {
+	"electron": "*"
+	},
+  "scripts": {
+  	"start" : "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Gene",
+    "Ontology",
+    "BioInformatics",
+    "Protein",
+    "Function"
+  ],
+  "author": "Waryam Soomro",
+  "license": "MIT"
+}
